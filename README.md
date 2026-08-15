@@ -18,13 +18,24 @@ XCUITest driver.
 ```sh
 npm install
 node scripts/explore.js
+node scripts/test-login.js
+node scripts/test-login.js --email you@example.com --password 'Secret123!'
 ```
 
 `explore.js` walks every tab in the app's bottom nav, capturing a
 screenshot, the full accessibility-tree page source, and a list of
-visible buttons/text for each tab (before and after one scroll). Output
-goes to `reports/<timestamp>/` (git-ignored — these are run artifacts,
-not source).
+visible buttons/text for each tab (before and after one scroll).
+
+`test-login.js` runs a data-driven suite of login scenarios (wrong
+password, unregistered email, empty fields, malformed email, whitespace
+padding, email case sensitivity, injection-style input, and valid
+credentials). It's self-contained: it signs out first if the app is
+already logged in, and signs back out after any scenario that results in
+a successful login, so it's safe to re-run without manual setup.
+
+Both scripts write to `reports/<timestamp>/` (git-ignored — these are run
+artifacts, not source): screenshots, full page-source XML, and for the
+login suite, `results.json` / `results.md`.
 
 ## Project layout
 
@@ -38,8 +49,17 @@ not source).
   native `XCUIElementTypeTabBar`), `tapByLabel` (always re-locates the
   element fresh right before tapping, to avoid stale-element errors),
   `swipeUp`.
-- `scripts/explore.js` — the exploratory test entry point. Use the `lib/`
-  helpers to write additional targeted scripts for specific flows.
+- `lib/loginActions.js` — login-flow helpers: `goToLoginForm`, `setEmail`/
+  `setPassword` (the fields have no accessibility name, so they're
+  targeted positionally by type), `submitLogin`, `waitForOutcome` (polls
+  rather than a fixed sleep, and auto-dismisses iOS's native "Save
+  Password?" keychain prompt, which otherwise blocks state detection),
+  `logOut` (retries a couple of times, since an unrelated app's push
+  notification banner can transiently cover the profile button on a real
+  device).
+- `scripts/explore.js` — the exploratory test entry point.
+- `scripts/test-login.js` — the login test suite; also a template for
+  writing additional scenario-matrix scripts for other flows.
 
 ## Notes on the signing setup
 
