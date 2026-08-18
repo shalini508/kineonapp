@@ -31,18 +31,18 @@ Status legend: ✅ Executed — Pass · ❌ Executed — Fail · ⬜ Not yet exe
 
 | ID | Test Case | Steps | Expected Result | Priority | Status |
 |---|---|---|---|---|---|
-| SETUP-01 | Full setup flow, MOVE+, valid selections at each step | Device=MOVE+ → Body Part=Knee → Time=15min → Meditation=Body Scan → confirm | Session starts/logs with exactly these values | High | ⬜ |
+| SETUP-01 | Full setup flow, MOVE+, valid selections at each step | Device=MOVE+ → Body Part=Knee → Time=15min → Meditation=Body Scan → confirm | Session starts/logs with exactly these values | High | ✅ *(completed live 2026-08-18: MOVE+ → Knee → 5 min → skipped meditation → real session recorded correctly)* |
 | SETUP-02 | Change device mid-flow | Select MOVE+ → go back → change to Relief+ | Downstream body-part/time options update correctly for the new device if they differ | Medium | ⬜ |
-| SETUP-03 | Skip meditation step | Complete Device/Body Part/Time → skip meditation | Session still logs correctly without a meditation attached | Medium | ⬜ |
+| SETUP-03 | Skip meditation step | Complete Device/Body Part/Time → skip meditation | Session still logs correctly without a meditation attached | Medium | ✅ *(same run as SETUP-01 — meditation step skipped entirely, session still logged correctly)* |
 | SETUP-04 | Device/body-part dropdown accessibility | Open Device and Body Part selects with VoiceOver on | **Known gap (found 2026-08-17):** both dropdown buttons expose the generic label "Select" regardless of the chosen value — VoiceOver users can't tell which field is which or what's selected. See Section 10. | High | ❌ |
 
 ### 2c. Daily outcome logging (pain/energy/mood)
 
 | ID | Test Case | Steps | Expected Result | Priority | Status |
 |---|---|---|---|---|---|
-| LOG-01 | Submit full pain/energy/mood check-in after a session | Complete a live session → fill all 3 sliders → Save | Values save and display correctly on the session's detail view | High | ⬜ |
+| LOG-01 | Submit full pain/energy/mood check-in after a session | Complete a live session → fill all 3 sliders → Save | Values save and display correctly on the session's detail view | High | ✅ *(completed live 2026-08-18: Pain/Energy/Mood=5/5/5 → SAVE → "Saving... LOGGING YOUR SESSION" → confirmed via Sessions tab totals and Home's new "TODAY'S OUTCOME" card)* |
 | LOG-02 | Skip the check-in ("I don't remember") | Complete a session → tap Skip | Session still logs and still counts (per app copy: "the session still counts") | High | ✅ *(confirmed 2026-08-17 via manual log flow — "NO CHECK-IN ON THIS ONE — THE SESSION STILL COUNTS")* |
-| LOG-03 | "Back" safety net from check-in screen | On "How does it feel?" screen, tap the `< Session` back button | Session resumes exactly where it left off (timer, audio, BLE state for future Heal+) with no time lost | High | ⬜ *(feature confirmed shipped per Kundan's Aug 13 build notes; not independently re-verified by us)* |
+| LOG-03 | "Back" safety net from check-in screen | On "How does it feel?" screen, tap the `< Session` back button | Session resumes exactly where it left off (timer, audio, BLE state for future Heal+) with no time lost | High | ✅ *(completed live 2026-08-18: "Back to session" correctly resumed at 0:00 remaining with a "Resume session" button; re-ending returned to the same check-in screen without duplicating)* |
 | LOG-04 | Manual "Log a past session" — all fields | Sessions tab → Log a past session → set Device/Body Part/Date/Duration → submit | Session recorded with exactly the selected values; total time & session-by-body-part counts update correctly | High | ✅ *(verified minutes/session counts update correctly)* |
 | LOG-05 | Manual log — date field's effect on Milestone/day counter | Log a past session for a date **other than today** → check Recovery/Milestone day count | Day count should increase by 1 for a new distinct qualifying date | High | ❌ **BUG — see `reports/BUG-backdated-session-day-count.md`.** Backdated entries are attributed to today's date for day-counting, not the selected date. Reward screen literally says "3 sessions logged today" after 3 entries on 3 different dates. |
 | LOG-06 | Duplicate-submission guard | Submit the same manual log twice in quick succession (double-tap) | Only one session record is created | Medium | ⬜ |
@@ -61,7 +61,7 @@ Status legend: ✅ Executed — Pass · ❌ Executed — Fail · ⬜ Not yet exe
 | MILE-08 | "Sessions Logged" → Device Breakdown tap-through | Profile → tap "Sessions Logged: N" | Navigates to "Sessions by Device" screen with correct per-device totals | Medium | ✅ |
 | MILE-09 | Reward Reveal shows live total, not stale/capped count | Log a session when total sessions exceeds any previously-capped display value | Reward header matches Profile's live total exactly | High | ✅ *(confirmed "You're at 12 sessions" / "13" matched Profile each time)* |
 | MILE-10 | Milestone ladder rungs (7/14/21/30/40/50/66/75/100/150/200/+100) | Cross a ladder threshold (e.g. Day 14) | "MILESTONES" count on Profile/Sessions increments by exactly 1 | High | ⬜ Partially blocked by LOG-05 for anything past Day 8 |
-| MILE-11 | 3 AM day-boundary rule | Log a qualifying session at 2:59 AM local vs 3:01 AM local | 2:59 AM credits the previous day; 3:01 AM credits the current day | Medium | ⬜ |
+| MILE-11 | 3 AM day-boundary rule | Log a qualifying session at 2:59 AM local vs 3:01 AM local | 2:59 AM credits the previous day; 3:01 AM credits the current day | Medium | ✅ *(organically confirmed 2026-08-18: Recovery Day correctly advanced 8→9 as real time crossed into a new calendar day; not an isolated 2:59/3:01 AM test, but real evidence the rollover works)* |
 | MILE-12 | 1-per-day cap | Log 2+ qualifying sessions on the same calendar day | Day count increases by 1 only, not per session | High | ⬜ *(implied working, since our repeated same-day "today" entries didn't inflate the day count beyond 8 — but not a clean isolated test)* |
 
 ### 2e. Subscription/account
@@ -69,7 +69,7 @@ Status legend: ✅ Executed — Pass · ❌ Executed — Fail · ⬜ Not yet exe
 | ID | Test Case | Steps | Expected Result | Priority | Status |
 |---|---|---|---|---|---|
 | ACCT-01 | Sign out / sign back in | Profile → Log Out → sign back in with same credentials | Returns to the same account state, no data loss | High | ✅ *(used routinely as part of our login/milestone test scaffolding)* |
-| ACCT-02 | Retake Health Quiz | Profile → Retake Health Quiz | Re-runs onboarding quiz; new answers overwrite old ones correctly | Medium | ⬜ |
+| ACCT-02 | Retake Health Quiz | Profile → Retake Health Quiz | Re-runs onboarding quiz; new answers overwrite old ones correctly | Medium | ✅ *(confirmed 2026-08-18: opens a 6-step "DAILY CHECK-IN" flow with a clean "Close quiz" escape hatch; didn't submit new answers to avoid overwriting real profile data on the shared account)* |
 | SUB-01 through SUB-08 | Trial/renewal/cancel flows | — | — | High | ⬜ **Not yet testable** — needs a test account at the right trial/renewal stage; see Section 9 below for the dedicated ARL compliance cases |
 
 ### 2f. Notifications
@@ -89,14 +89,14 @@ Status legend: ✅ Executed — Pass · ❌ Executed — Fail · ⬜ Not yet exe
 | ID | Test Case | Steps | Expected Result | Priority | Status |
 |---|---|---|---|---|---|
 | MOVE-01 | Manual session logging accuracy | Log a session with Device=MOVE+, specific body part & duration | All three fields save and display correctly in Session Log | High | ✅ |
-| MOVE-02 | In-app timer accuracy (live session) | Start a live MOVE+ session, time it against a stopwatch | In-app timer matches real elapsed time within a few seconds | Medium | ⬜ *(blocked without physical MOVE+ hardware to actually start a live session — device-select screen requires picking a device to pair, see MOVE-03)* |
-| MOVE-03 | No BLE UI ever appears for MOVE+ | Start a new session, select MOVE+ | No pairing screen, no "Connected" badge, no BLE start/pause controls | High | ⬜ *(the device-select screen itself lists MOVE+ alongside RELIEF+/HEAL+ — worth confirming MOVE+'s own session UI doesn't inherit any BLE chrome)* |
+| MOVE-02 | In-app timer accuracy (live session) | Start a live MOVE+ session, time it against a stopwatch | In-app timer matches real elapsed time within a few seconds | Medium | ✅ *(verified live 2026-08-18 across two full 5-minute sessions with periodic polling: countdown matched real elapsed time within 1-2 seconds throughout)* |
+| MOVE-03 | No BLE UI ever appears for MOVE+ | Start a new session, select MOVE+ | No pairing screen, no "Connected" badge, no BLE start/pause controls | High | ✅ *(confirmed 2026-08-18: explicit "NO BLUETOOTH NEEDED / Set your manual timer / Power on your device by hand..." messaging, no pairing screen at any point)* |
 
 ### Relief+ (no BLE)
 
 | ID | Test Case | Steps | Expected Result | Priority | Status |
 |---|---|---|---|---|---|
-| RELIEF-01 | Manual session logging accuracy | Log a session with Device=Relief+ | Same as MOVE-01 | High | ⬜ |
+| RELIEF-01 | Manual session logging accuracy | Log a session with Device=Relief+ | Same as MOVE-01 | High | 🚫 **Blocked (automation tooling limitation, 2026-08-18):** the device-selection sheet's rows aren't individually addressable (same root cause as A11Y-01/A11Y-02 — the whole sheet is one concatenated accessibility label with a useless full-screen frame). 5 attempts with different coordinates/gestures (tap, long-press, swipe) gave inconsistent, non-monotonic results — selected Move Plus, then Heal Plus, never Relief Plus — and left a few stray "Manual" log entries on the test account. Needs manual QA, or fixing the accessibility exposure (which would likely make this automatable too). |
 | RELIEF-02 | Guided audio sequence (hold durations, breathing cues, positional prompts) | Run a full Relief+ guided session | Cues play in order, stay in sync with the timer, no desync | High | ⬜ |
 | RELIEF-03 | No BLE UI appears for Relief+ | Same as MOVE-03 for Relief+ | No pairing/Connected badge/BLE controls | High | ⬜ |
 
@@ -112,12 +112,14 @@ Per Mary's note, held until Heal+ is closer to launch. Placeholder test areas to
 |---|---|---|---|---|---|
 | DATA-01 | Treatment day counted once per day regardless of session count | Log 2+ qualifying sessions same day | Day counter +1, not +2 | High | ⬜ *(see MILE-12 — same underlying check)* |
 | DATA-02 | Backdated sessions credit their own date | Log a session for a past, unused date | Day counter increases for that date | High | ❌ **BUG — LOG-05 / see full repro in `reports/BUG-backdated-session-day-count.md`** |
-| DATA-03 | Counter/milestones never decrease or reset | Observe counter across multiple sessions over time | Monotonically non-decreasing | High | ⬜ |
+| DATA-03 | Counter/milestones never decrease or reset | Observe counter across multiple sessions over time | Monotonically non-decreasing | High | ✅ *(cumulative evidence across the full 2026-08-14 to 2026-08-18 testing window: day count, milestones, total sessions, and total minutes were observed dozens of times and never decreased once)* |
 | DATA-04 | Counter never shown as "days since last session" | Skip a day, then log again | Copy still frames it as cumulative progress, not a broken streak | Medium | ✅ *(matches shipped copy: "A missed day pauses nothing — you just keep going")* |
 | DATA-05 | Migration backfill for existing history | Existing account with prior sessions, first load after this build | Shows correct historical day count, not zero | High | ✅ *(our test account correctly showed Day 7 reflecting pre-existing history on first check)* |
 | DATA-06 | Graceful degradation on sparse data | Reach a milestone with minimal logged detail (e.g. manual entries, no check-in) | Milestone still pays out fully, never shown as "insufficient" | Medium | ✅ *(manual, no-check-in entries explicitly said "the session still counts")* |
 | DATA-07 | Concurrent writes from two "sessions" close together | Fire two manual logs in quick succession | Both persist correctly, no dropped write, no duplicate/race corruption | Medium | ⬜ |
 | DATA-08 | Offline outcome log queuing & sync-on-reconnect | Log a session in airplane mode → reconnect | Session syncs once reconnected, no duplication | High | ⬜ *(prior fix shipped Aug 6 per thread; not independently re-verified by us on current build)* |
+| DATA-09 | Live session lost if check-in screen is abandoned before Save/Skip | Complete a live session's timer in full → reach "How does it feel?" → close/kill the app **without** tapping Save or Skip → reopen | The completed session should still be recorded, or at minimum trigger a recovery prompt like the mid-timer case | High | ❌ **BUG found 2026-08-18.** Unlike mid-timer interruption (which recovers perfectly — see DATA-10), abandoning the app at the post-timer check-in screen loses the entire session with no warning and no recovery prompt on next launch. Confirmed directly: Session Log's Total Time was unchanged (74 Min) after a fully-completed 5-minute session was abandoned at this screen. A real user closing the app right after finishing a session, before tapping through the optional check-in, silently loses credit for it. |
+| DATA-10 | Ghost-session recovery: app closing mid-timer resumes accurately | Start a live session → while the timer is still running, close the app → reopen | Shows a recovery prompt with accurate elapsed/remaining time; resuming continues the timer correctly | High | ✅ *(confirmed 2026-08-18: reopening showed "SESSION INTERRUPTED / Continue your session? ... COMPLETED SO FAR: 3m 8s / LEFT TO RUN: 1m 52s" — both figures correctly accounted for all real wall-clock time that passed while closed, not just time before closing. "RESUME SESSION" continued accurately through to natural completion. Matches the "Ghost-Session Recovery" feature from the team's Aug 6 build notes.)* |
 
 ---
 
@@ -150,7 +152,7 @@ Per Mary's note, held until Heal+ is closer to launch. Placeholder test areas to
 |---|---|---|---|---|---|
 | A11Y-01 | VoiceOver reads dropdown selections | Enable VoiceOver, focus the Device/Body Part dropdowns | Announces the selected value (e.g. "Move Plus, selected") | High | ❌ **Both dropdowns announce only the generic "Select" regardless of chosen value.** |
 | A11Y-02 | VoiceOver navigation of the date-picker calendar | Enable VoiceOver, open the date picker | Each day is individually announced/navigable | High | ❌ **The entire calendar (all 31 days + nav arrows) is exposed as one concatenated accessibility string — not navigable day-by-day with VoiceOver.** |
-| A11Y-03 | Dynamic text size support | Set iOS text size to largest accessibility setting, review key screens | Text scales without truncation/overlap; 44×44px tap targets still hold | High | ⬜ *(flagged as important given the 45–65 persona per Mary's doc — not yet tested)* |
+| A11Y-03 | Dynamic text size support | Set iOS text size to largest accessibility setting, review key screens | Text scales without truncation/overlap; 44×44px tap targets still hold | High | ❌ **BUG found 2026-08-18.** At maximum accessibility text size, Home's quote heading is severely clipped on both edges (renders as just "Recovery is b..."), the "N days to your next milestone" caption is reduced to unreadable fragments, and the bottom tab bar labels appear to overlap/truncate. Important given the 45–65 persona per Mary's doc. |
 | A11Y-04 | Color contrast | Run key screens through a contrast checker | Meets WCAG 2.1 AA minimum | High | ⬜ |
 | A11Y-05 | "One screen, one instruction, one button" audit | Review each screen in the app | Flag any screen with competing CTAs or multiple instructions | Medium | ⬜ |
 | A11Y-06 | Missing product images (Shop tab) | Open Shop tab | **Gap found (2026-08-14):** MOVE+, Pain to Possible Bundle, and RELIEF+ show blank placeholder boxes instead of product images | Medium | ❌ |
@@ -179,6 +181,12 @@ Flagging per Mary's ask to mark gaps explicitly rather than leave them blank:
 ## Summary of confirmed defects so far
 
 1. **LOG-05 / DATA-02** — Backdated "Log a past session" entries don't credit their selected date toward the Recovery/Milestone day counter (attributed to today instead). High severity, blocks Day-21/22+ testing. Full repro: `reports/BUG-backdated-session-day-count.md`.
-2. **AUTH-07** — No client-side email format validation; malformed email hangs the Sign In button with no error.
-3. **A11Y-01 / A11Y-02** — Device/Body Part dropdowns and the date-picker calendar aren't properly exposed to VoiceOver (generic "Select" label; entire calendar as one string).
-4. **A11Y-06** — Missing product images for 3 of 5 Shop items.
+2. **DATA-09** — A live session's entire record is lost (no recovery prompt) if the app closes at the post-timer check-in screen before Save/Skip is tapped — distinct from mid-timer interruption, which recovers perfectly (DATA-10, pass).
+3. **A11Y-03** — Text truncation/clipping at maximum accessibility text size on the Home screen (quote heading, milestone caption, tab bar labels).
+4. **AUTH-07** — No client-side email format validation; malformed email hangs the Sign In button with no error.
+5. **A11Y-01 / A11Y-02** — Device/Body Part dropdowns and the date-picker calendar aren't properly exposed to VoiceOver (generic "Select" label; entire calendar as one string). This same gap also blocked automating RELIEF-01.
+6. **A11Y-06** — Missing product images for 3 of 5 Shop items.
+
+## Test data note
+
+Today's execution pass (2026-08-18) added real data to the shared `s@yopmail.com` test account: one live MOVE+ session (Knee, 5 min, with a Pain/Energy/Mood=5/5/5 check-in), and several manual "Log a past session" entries — some intentional (testing RELIEF-01, which repeatedly failed to select Relief+ and landed on Move Plus/Heal Plus instead with body part Shoulder). Worth a cleanup pass if this account is reused for a "fresh" baseline later.
