@@ -44,7 +44,7 @@ Status legend: ✅ Executed — Pass · ❌ Executed — Fail · ⬜ Not yet exe
 | LOG-02 | Skip the check-in ("I don't remember") | Complete a session → tap Skip | Session still logs and still counts (per app copy: "the session still counts") | High | ✅ *(confirmed 2026-08-17 via manual log flow — "NO CHECK-IN ON THIS ONE — THE SESSION STILL COUNTS")* |
 | LOG-03 | "Back" safety net from check-in screen | On "How does it feel?" screen, tap the `< Session` back button | Session resumes exactly where it left off (timer, audio, BLE state for future Heal+) with no time lost | High | ✅ *(completed live 2026-08-18: "Back to session" correctly resumed at 0:00 remaining with a "Resume session" button; re-ending returned to the same check-in screen without duplicating)* |
 | LOG-04 | Manual "Log a past session" — all fields | Sessions tab → Log a past session → set Device/Body Part/Date/Duration → submit | Session recorded with exactly the selected values; total time & session-by-body-part counts update correctly | High | ✅ *(verified minutes/session counts update correctly)* |
-| LOG-05 | Manual log — date field's effect on Milestone/day counter | Log a past session for a date **other than today** → check Recovery/Milestone day count | Day count should increase by 1 for a new distinct qualifying date | High | ❌ **BUG — see `reports/BUG-backdated-session-day-count.md`.** Backdated entries are attributed to today's date for day-counting, not the selected date. Reward screen literally says "3 sessions logged today" after 3 entries on 3 different dates. |
+| LOG-05 | Manual log — date field's effect on Milestone/day counter | Log a past session for a date **other than today** → check Recovery/Milestone day count | Day count should increase by 1 for a new distinct qualifying date | High | ❌ **BUG — see `docs/bugs/BUG-backdated-session-day-count.md`.** Backdated entries are attributed to today's date for day-counting, not the selected date. Reward screen literally says "3 sessions logged today" after 3 entries on 3 different dates. |
 | LOG-06 | Duplicate-submission guard | Submit the same manual log twice in quick succession (double-tap) | Only one session record is created | Medium | ⬜ |
 
 ### 2d. Milestone/progress dashboard
@@ -111,7 +111,7 @@ Per Mary's note, held until Heal+ is closer to launch. Placeholder test areas to
 | ID | Test Case | Steps | Expected Result | Priority | Status |
 |---|---|---|---|---|---|
 | DATA-01 | Treatment day counted once per day regardless of session count | Log 2+ qualifying sessions same day | Day counter +1, not +2 | High | ⬜ *(see MILE-12 — same underlying check)* |
-| DATA-02 | Backdated sessions credit their own date | Log a session for a past, unused date | Day counter increases for that date | High | ❌ **BUG — LOG-05 / see full repro in `reports/BUG-backdated-session-day-count.md`** |
+| DATA-02 | Backdated sessions credit their own date | Log a session for a past, unused date | Day counter increases for that date | High | ❌ **BUG — LOG-05 / see full repro in `docs/bugs/BUG-backdated-session-day-count.md`** |
 | DATA-03 | Counter/milestones never decrease or reset | Observe counter across multiple sessions over time | Monotonically non-decreasing | High | ✅ *(cumulative evidence across the full 2026-08-14 to 2026-08-18 testing window: day count, milestones, total sessions, and total minutes were observed dozens of times and never decreased once)* |
 | DATA-04 | Counter never shown as "days since last session" | Skip a day, then log again | Copy still frames it as cumulative progress, not a broken streak | Medium | ✅ *(matches shipped copy: "A missed day pauses nothing — you just keep going")* |
 | DATA-05 | Migration backfill for existing history | Existing account with prior sessions, first load after this build | Shows correct historical day count, not zero | High | ✅ *(our test account correctly showed Day 7 reflecting pre-existing history on first check)* |
@@ -180,7 +180,7 @@ Flagging per Mary's ask to mark gaps explicitly rather than leave them blank:
 
 ## Summary of confirmed defects so far
 
-1. **LOG-05 / DATA-02** — Backdated "Log a past session" entries don't credit their selected date toward the Recovery/Milestone day counter (attributed to today instead). High severity, blocks Day-21/22+ testing. Full repro: `reports/BUG-backdated-session-day-count.md`.
+1. **LOG-05 / DATA-02** — Backdated "Log a past session" entries don't credit their selected date toward the Recovery/Milestone day counter (attributed to today instead). High severity, blocks Day-21/22+ testing. Full repro: `docs/bugs/BUG-backdated-session-day-count.md`.
 2. **DATA-09** — A live session's entire record is lost (no recovery prompt) if the app closes at the post-timer check-in screen before Save/Skip is tapped — distinct from mid-timer interruption, which recovers perfectly (DATA-10, pass).
 3. **A11Y-03** — Text truncation/clipping at maximum accessibility text size on the Home screen (quote heading, milestone caption, tab bar labels).
 4. **AUTH-07** — No client-side email format validation; malformed email hangs the Sign In button with no error.
