@@ -18,7 +18,7 @@ const capabilities = {
   'appium:xcodeOrgId': TEAM_ID,
   'appium:xcodeSigningId': 'Apple Development',
   'appium:allowProvisioningDeviceRegistration': true,
-  'appium:usePrebuiltWDA': false,
+  'appium:usePrebuiltWDA': true,
   'appium:showXcodeLog': false,
   'appium:wdaLaunchTimeout': 240000,
   'appium:wdaConnectionTimeout': 240000,

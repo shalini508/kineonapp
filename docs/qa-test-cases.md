@@ -21,10 +21,10 @@ Status legend: ✅ Executed — Pass · ❌ Executed — Fail · ⬜ Not yet exe
 
 | ID | Test Case | Steps | Expected Result | Priority | Status |
 |---|---|---|---|---|---|
-| ONB-01 | Complete onboarding with valid answers to all 8 questions | Fresh account → step through all 8 questions with valid input → finish | Reaches Home screen; answers persist to profile | High | ⬜ |
+| ONB-01 | Complete onboarding with valid answers to all 8 questions | Fresh account → step through all 8 questions with valid input → finish | Reaches Home screen; answers persist to profile | High | ⬜ *(2026-08-21: `s1@yopmail.com`, given as the "new user," turned out to already be onboarded — went straight to Home. Signed up a genuinely new account, `s2@yopmail.com`, via the app's own Sign Up flow instead; got through name/email/password/terms and hit email-code verification, but yopmail.com's inbox is JS-rendered so the code can't be fetched programmatically. Needs the code retrieved manually to finish the 8-question flow itself.)* |
 | ONB-02 | Back navigation mid-flow | Start onboarding → go back 1+ questions → change an answer | Previous answer is preserved/editable, no data loss | Medium | ⬜ |
 | ONB-03 | Exit and resume onboarding | Start onboarding → kill app mid-flow → relaunch | Resumes at the same question, or restarts cleanly (no crash, no stuck state) | High | ⬜ |
-| ONB-04 | Skip optional questions (if any are optional) | Leave optional fields blank → continue | Flow proceeds; downstream screens handle missing data gracefully | Medium | ⬜ |
+| ONB-04 | Skip optional questions (if any are optional) | Leave optional fields blank → continue | Flow proceeds; downstream screens handle missing data gracefully | Medium | ⬜ *(same blocker as ONB-01 — needs the `s2@yopmail.com` email code retrieved manually)* |
 | ONB-05 | "Best treatment time" selection feeds notification scheduling | Select a specific time in onboarding → check Settings/Notifications later | Selected time is reflected wherever it's used downstream | Medium | ⬜ |
 
 ### 2b. Device session setup (Device → Body Part → Time → Meditation)
@@ -32,7 +32,7 @@ Status legend: ✅ Executed — Pass · ❌ Executed — Fail · ⬜ Not yet exe
 | ID | Test Case | Steps | Expected Result | Priority | Status |
 |---|---|---|---|---|---|
 | SETUP-01 | Full setup flow, MOVE+, valid selections at each step | Device=MOVE+ → Body Part=Knee → Time=15min → Meditation=Body Scan → confirm | Session starts/logs with exactly these values | High | ✅ *(completed live 2026-08-18: MOVE+ → Knee → 5 min → skipped meditation → real session recorded correctly)* |
-| SETUP-02 | Change device mid-flow | Select MOVE+ → go back → change to Relief+ | Downstream body-part/time options update correctly for the new device if they differ | Medium | ⬜ |
+| SETUP-02 | Change device mid-flow | Select MOVE+ → go back → change to Relief+ | Downstream body-part/time options update correctly for the new device if they differ | Medium | 🚫 **Blocked (2026-08-21):** same root cause as RELIEF-01/A11Y-01 — reconfirmed on a fresh account (`s1@yopmail.com`) that the device-picker sheet can't be reliably driven to select anything other than the current default (Move Plus); 2 more coordinate-tap attempts both silently re-selected Move Plus. |
 | SETUP-03 | Skip meditation step | Complete Device/Body Part/Time → skip meditation | Session still logs correctly without a meditation attached | Medium | ✅ *(same run as SETUP-01 — meditation step skipped entirely, session still logged correctly)* |
 | SETUP-04 | Device/body-part dropdown accessibility | Open Device and Body Part selects with VoiceOver on | **Known gap (found 2026-08-17):** both dropdown buttons expose the generic label "Select" regardless of the chosen value — VoiceOver users can't tell which field is which or what's selected. See Section 10. | High | ❌ |
 
@@ -45,7 +45,7 @@ Status legend: ✅ Executed — Pass · ❌ Executed — Fail · ⬜ Not yet exe
 | LOG-03 | "Back" safety net from check-in screen | On "How does it feel?" screen, tap the `< Session` back button | Session resumes exactly where it left off (timer, audio, BLE state for future Heal+) with no time lost | High | ✅ *(completed live 2026-08-18: "Back to session" correctly resumed at 0:00 remaining with a "Resume session" button; re-ending returned to the same check-in screen without duplicating)* |
 | LOG-04 | Manual "Log a past session" — all fields | Sessions tab → Log a past session → set Device/Body Part/Date/Duration → submit | Session recorded with exactly the selected values; total time & session-by-body-part counts update correctly | High | ✅ *(verified minutes/session counts update correctly)* |
 | LOG-05 | Manual log — date field's effect on Milestone/day counter | Log a past session for a date **other than today** → check Recovery/Milestone day count | Day count should increase by 1 for a new distinct qualifying date | High | ❌ **BUG — see `docs/bugs/BUG-backdated-session-day-count.md`.** Backdated entries are attributed to today's date for day-counting, not the selected date. Reward screen literally says "3 sessions logged today" after 3 entries on 3 different dates. |
-| LOG-06 | Duplicate-submission guard | Submit the same manual log twice in quick succession (double-tap) | Only one session record is created | Medium | ⬜ |
+| LOG-06 | Duplicate-submission guard | Submit the same manual log twice in quick succession (double-tap) | Only one session record is created | Medium | ✅ *(2026-08-21, `s1@yopmail.com`: double-tapped LOG SESSION with no delay between taps — Session Log afterward showed exactly one Knee/15m entry, Total Time 15 Min, not 30. Guard works correctly.)* |
 
 ### 2d. Milestone/progress dashboard
 
@@ -60,7 +60,7 @@ Status legend: ✅ Executed — Pass · ❌ Executed — Fail · ⬜ Not yet exe
 | MILE-07 | Tapping Premium Challenges prompt | From the Day-21 celebration card, tap the prompt | Navigates to upsell screen; does **not** hard-block continued app use | Medium | ⬜ Blocked by LOG-05 |
 | MILE-08 | "Sessions Logged" → Device Breakdown tap-through | Profile → tap "Sessions Logged: N" | Navigates to "Sessions by Device" screen with correct per-device totals | Medium | ✅ |
 | MILE-09 | Reward Reveal shows live total, not stale/capped count | Log a session when total sessions exceeds any previously-capped display value | Reward header matches Profile's live total exactly | High | ✅ *(confirmed "You're at 12 sessions" / "13" matched Profile each time)* |
-| MILE-10 | Milestone ladder rungs (7/14/21/30/40/50/66/75/100/150/200/+100) | Cross a ladder threshold (e.g. Day 14) | "MILESTONES" count on Profile/Sessions increments by exactly 1 | High | ⬜ Partially blocked by LOG-05 for anything past Day 8 |
+| MILE-10 | Milestone ladder rungs (7/14/21/30/40/50/66/75/100/150/200/+100) | Cross a ladder threshold (e.g. Day 14) | "MILESTONES" count on Profile/Sessions increments by exactly 1 | High | ✅ *(partial, 2026-08-21)* Day 0→1 transition verified on fresh account `s1@yopmail.com`: logged one same-day session, Home went from "No recovery days logged yet" to "Recovery Day 1 of 21." Confirms day-counting works for same-day sessions — LOG-05's bug is specific to backdated dates. Still blocked past Day 1 for the same reason as before. |
 | MILE-11 | 3 AM day-boundary rule | Log a qualifying session at 2:59 AM local vs 3:01 AM local | 2:59 AM credits the previous day; 3:01 AM credits the current day | Medium | ✅ *(organically confirmed 2026-08-18: Recovery Day correctly advanced 8→9 as real time crossed into a new calendar day; not an isolated 2:59/3:01 AM test, but real evidence the rollover works)* |
 | MILE-12 | 1-per-day cap | Log 2+ qualifying sessions on the same calendar day | Day count increases by 1 only, not per session | High | ⬜ *(implied working, since our repeated same-day "today" entries didn't inflate the day count beyond 8 — but not a clean isolated test)* |
 
@@ -70,7 +70,7 @@ Status legend: ✅ Executed — Pass · ❌ Executed — Fail · ⬜ Not yet exe
 |---|---|---|---|---|---|
 | ACCT-01 | Sign out / sign back in | Profile → Log Out → sign back in with same credentials | Returns to the same account state, no data loss | High | ✅ *(used routinely as part of our login/milestone test scaffolding)* |
 | ACCT-02 | Retake Health Quiz | Profile → Retake Health Quiz | Re-runs onboarding quiz; new answers overwrite old ones correctly | Medium | ✅ *(confirmed 2026-08-18: opens a 6-step "DAILY CHECK-IN" flow with a clean "Close quiz" escape hatch; didn't submit new answers to avoid overwriting real profile data on the shared account)* |
-| SUB-01 through SUB-08 | Trial/renewal/cancel flows | — | — | High | ⬜ **Not yet testable** — needs a test account at the right trial/renewal stage; see Section 9 below for the dedicated ARL compliance cases |
+| SUB-01 through SUB-08 | Trial/renewal/cancel flows | — | — | High | 🚫 **Not testable — confirmed root cause, 2026-08-21:** Settings → Membership → Manage opens a screen that explicitly reads "Subscription management is coming soon. This screen is a placeholder so the flow is wired up for a future design." This isn't an account-state gap — the feature isn't built yet, so all of Section 9 (trial timing, renewal notices, save-offer, cancel/save CTA, auto-renewal disclosure) is currently untestable by design. Worth flagging to Mary directly as a scoping note. |
 
 ### 2f. Notifications
 
@@ -98,7 +98,7 @@ Status legend: ✅ Executed — Pass · ❌ Executed — Fail · ⬜ Not yet exe
 |---|---|---|---|---|---|
 | RELIEF-01 | Manual session logging accuracy | Log a session with Device=Relief+ | Same as MOVE-01 | High | 🚫 **Blocked (automation tooling limitation, 2026-08-18):** the device-selection sheet's rows aren't individually addressable (same root cause as A11Y-01/A11Y-02 — the whole sheet is one concatenated accessibility label with a useless full-screen frame). 5 attempts with different coordinates/gestures (tap, long-press, swipe) gave inconsistent, non-monotonic results — selected Move Plus, then Heal Plus, never Relief Plus — and left a few stray "Manual" log entries on the test account. Needs manual QA, or fixing the accessibility exposure (which would likely make this automatable too). |
 | RELIEF-02 | Guided audio sequence (hold durations, breathing cues, positional prompts) | Run a full Relief+ guided session | Cues play in order, stay in sync with the timer, no desync | High | ⬜ |
-| RELIEF-03 | No BLE UI appears for Relief+ | Same as MOVE-03 for Relief+ | No pairing/Connected badge/BLE controls | High | ⬜ |
+| RELIEF-03 | No BLE UI appears for Relief+ | Same as MOVE-03 for Relief+ | No pairing/Connected badge/BLE controls | High | 🚫 **Blocked (2026-08-21):** same root cause as RELIEF-01 — can't reliably select Relief Plus in the device picker to reach this state at all (reconfirmed on fresh account `s1@yopmail.com`, 2 more failed attempts). Needs A11Y-01 fixed first, or a manual QA pass. |
 
 ### Heal+ (BLE — out of scope for now)
 
@@ -139,7 +139,7 @@ Per Mary's note, held until Heal+ is closer to launch. Placeholder test areas to
 | AUTH-10 | Case-varied valid email | `USER@X.COM` | Logs in successfully (case-insensitive) | Low | ✅ *(edge case, passes leniently)* |
 | AUTH-11 | Expired session handling | Force an expired token/session, attempt an action | Redirects to login gracefully, no crash | High | ⬜ |
 | AUTH-12 | Concurrent logins (same account, two devices) | Log in on two devices simultaneously | Defined, non-corrupting behavior on both sessions | Medium | ⬜ |
-| AUTH-13 | Password reset abuse / rate limiting | Repeated password-reset requests | Rate-limited appropriately | Medium | ⬜ |
+| AUTH-13 | Password reset abuse / rate limiting | Repeated password-reset requests | Rate-limited appropriately | Medium | ✅ *(2026-08-21, `s1@yopmail.com`)* The "Resend in 60 seconds" cooldown on the code-entry screen is backed by a real server-side limit, not just client-side UI — going Back and re-triggering "Forgot password?" fresh (bypassing the visible cooldown) returned "Too many attempts — please try again in a few minutes" starting on the 2nd request. |
 | AUTH-14 | Biometric login fallback | Enable Face ID/Touch ID, then fail biometric | Falls back to password entry cleanly | Medium | ⬜ |
 
 *(Full reusable automated suite: `scripts/test-login.js` in the repo — covers AUTH-01 through AUTH-10.)*
@@ -190,3 +190,5 @@ Flagging per Mary's ask to mark gaps explicitly rather than leave them blank:
 ## Test data note
 
 Today's execution pass (2026-08-18) added real data to the shared `s@yopmail.com` test account: one live MOVE+ session (Knee, 5 min, with a Pain/Energy/Mood=5/5/5 check-in), and several manual "Log a past session" entries — some intentional (testing RELIEF-01, which repeatedly failed to select Relief+ and landed on Move Plus/Heal Plus instead with body part Shoulder). Worth a cleanup pass if this account is reused for a "fresh" baseline later.
+
+The 2026-08-21 pass used `s1@yopmail.com` (provided as the "new user" account) for MILE-10/LOG-06/AUTH-13/SUB-01/RELIEF-03/SETUP-02 — it now has 1 manual Knee/15min session logged and is on Recovery Day 1. It turned out to already be onboarded (name "Shalinj," presumably from Kundan's own setup), so it couldn't be used for ONB-01/04/05; a second account, `s2@yopmail.com`, was signed up fresh via the app's own Sign Up flow for that purpose and is currently stuck at email-code verification (code not retrievable programmatically from yopmail.com's JS-rendered inbox).
