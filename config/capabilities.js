@@ -25,10 +25,16 @@ const capabilities = {
   'appium:newCommandTimeout': 180,
 };
 
+// An Appium server caches its simulator list at startup, so a long-running
+// server doesn't recognise simulators created after it launched -- it falls
+// back to real-device handling and fails with "RemoteXPC tunnel is not
+// available for this session". When that happens, start a fresh server on
+// another port and point the suite at it with APPIUM_PORT rather than
+// killing a server another session may be using.
 const wdOpts = {
   protocol: 'http',
   hostname: '127.0.0.1',
-  port: 4723,
+  port: process.env.APPIUM_PORT ? parseInt(process.env.APPIUM_PORT, 10) : 4723,
   path: '/',
   logLevel: 'warn',
   connectionRetryTimeout: 240000,

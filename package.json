@@ -15,5 +15,8 @@
   "dependencies": {
     "fast-xml-parser": "^5.10.1",
     "webdriver": "^9.30.1"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^24.43.1"
   }
 }

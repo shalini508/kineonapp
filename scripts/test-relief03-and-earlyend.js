@@ -1,49 +1,90 @@
 const { startSession, endSession } = require('../lib/session');
 const { screenshot, dumpSource, extractElements, interactiveSummary, ensureDir, sleep } = require('../lib/actions');
-const { goToLoginForm, setEmail, setPassword, submitLogin, waitForOutcome, isLoggedIn, findFresh } = require('../lib/loginActions');
+const { findFresh, isLoggedIn } = require('../lib/loginActions');
 
-const DIR = 'reports/retest-2026-08-21';
-const EMAIL = 's1@yopmail.com';
-const PASSWORD = 'Test@2006';
+const DIR = 'reports/regression-2026-08-27';
+
+async function tap(client, xpath, label) {
+  const el = await findFresh(client, xpath);
+  if (!el) { console.log(`NOT FOUND: ${label}`); return false; }
+  await client.elementClick(el);
+  return true;
+}
+async function tapPoint(client, x, y) {
+  await client.performActions([{ type: 'pointer', id: 'finger1', parameters: { pointerType: 'touch' }, actions: [
+    { type: 'pointerMove', duration: 0, x, y },
+    { type: 'pointerDown', button: 0 }, { type: 'pause', duration: 80 }, { type: 'pointerUp', button: 0 },
+  ]}]);
+  await client.releaseActions();
+}
+function labeled(source) { return interactiveSummary(extractElements(source)); }
 
 async function main() {
   const client = await startSession();
   ensureDir(DIR);
   try {
-    if (!(await isLoggedIn(client))) {
-      await goToLoginForm(client);
-      await setEmail(client, EMAIL);
-      await setPassword(client, PASSWORD);
-      await submitLogin(client);
-      await waitForOutcome(client, 8000, 500);
-      await sleep(1000);
+    console.log('LOGGED IN?', await isLoggedIn(client));
+    await tap(client, '//XCUIElementTypeButton[@label="Home" or @name="Home"]', 'Home tab');
+    await sleep(1000);
+    await tap(client, '//XCUIElementTypeButton[contains(@label,"START TODAY") or contains(@name,"START TODAY")]', "START TODAY'S SESSION");
+    await sleep(1500);
+    await tap(client, '//XCUIElementTypeButton[contains(@label,"Start with MOVE+") or contains(@name,"Start with MOVE+")]', 'Start with MOVE+');
+    await sleep(1500);
+    await tap(client, '//XCUIElementTypeButton[contains(@label,"Target Elbow") or contains(@name,"Target Elbow")]', 'Target Elbow');
+    await sleep(500);
+    await tap(client, '//XCUIElementTypeButton[contains(@label,"CONTINUE") or contains(@name,"CONTINUE")]', 'CONTINUE');
+    await sleep(1500);
+
+    let { source } = await dumpSource(client, DIR, '50-post-continue');
+    let raw = extractElements(source).filter((e) => e.visible && (e.label || e.name));
+    if (raw.some((e) => /how to place|CLOSE/i.test(e.label || e.name))) {
+      console.log('Training popup present -- dismissing');
+      await tapPoint(client, 355, 78);
+      await sleep(1200);
     }
-    const startBtn = await findFresh(client, '//XCUIElementTypeButton[contains(@label,"START TODAY") or contains(@name,"START TODAY")]');
-    await client.elementClick(startBtn);
+
+    await tap(client, '//XCUIElementTypeButton[contains(@label,"Set duration to 5 minutes") or contains(@name,"Set duration to 5 minutes")]', '5 min duration');
+    await sleep(500);
+    await tap(client, '//XCUIElementTypeButton[contains(@label,"START SESSION") or contains(@name,"START SESSION")]', 'START SESSION');
+    await sleep(2500);
+    await screenshot(client, DIR, '51-live-session');
+    ({ source } = await dumpSource(client, DIR, '51-live-session'));
+    console.log('LIVE SESSION:', JSON.stringify(labeled(source), null, 2));
+
+    await tap(client, '//XCUIElementTypeButton[contains(@label,"END SESSION") or contains(@name,"END SESSION")]', 'END SESSION');
+    await sleep(1000);
+    ({ source } = await dumpSource(client, DIR, '52-end-confirm'));
+    console.log('END CONFIRM:', JSON.stringify(labeled(source), null, 2));
+
+    // Handle whichever confirm-button wording appears
+    let confirmed = await tap(client, '//XCUIElementTypeButton[contains(@label,"End & Log") or contains(@name,"End & Log")]', 'End & Log');
+    if (!confirmed) confirmed = await tap(client, '//XCUIElementTypeButton[@label="End" or @name="End"]', 'End');
+    await sleep(1500);
+    await screenshot(client, DIR, '53-post-session-log');
+    ({ source } = await dumpSource(client, DIR, '53-post-session-log'));
+    console.log('POST-SESSION LOG (confirmed=' + confirmed + '):', JSON.stringify(labeled(source), null, 2));
+
+    // Fill and save WITHOUT any relaunch in between
+    const p1 = await tap(client, '//XCUIElementTypeButton[contains(@label,"Pain 3") or contains(@name,"Pain 3")]', 'Pain 3');
+    await sleep(300);
+    const p2 = await tap(client, '//XCUIElementTypeButton[contains(@label,"Energy 6") or contains(@name,"Energy 6")]', 'Energy 6');
+    await sleep(300);
+    const p3 = await tap(client, '//XCUIElementTypeButton[contains(@label,"Mood 7") or contains(@name,"Mood 7")]', 'Mood 7');
+    await sleep(300);
+    await screenshot(client, DIR, '54-log-filled');
+    const saved = await tap(client, '//XCUIElementTypeButton[contains(@label,"SAVE") or contains(@name,"SAVE")]', 'SAVE');
+    await sleep(1500);
+    await screenshot(client, DIR, '55-after-save');
+    ({ source } = await dumpSource(client, DIR, '55-after-save'));
+    console.log(`RATINGS TAPPED (pain=${p1} energy=${p2} mood=${p3}) SAVED=${saved}`);
+    console.log('AFTER SAVE:', JSON.stringify(labeled(source), null, 2));
+
+    // Now check Sessions tab in the SAME continuous session
+    await tap(client, '//XCUIElementTypeButton[@label="Sessions" or @name="Sessions"]', 'Sessions tab');
     await sleep(1200);
-
-    const reliefBtn = await findFresh(client, '//XCUIElementTypeButton[contains(@label,"Start with RELIEF") or contains(@name,"Start with RELIEF")]');
-    await client.elementClick(reliefBtn);
-    await sleep(1000);
-
-    const kneeBtn = await findFresh(client, '//XCUIElementTypeButton[contains(@label,"Target Knee") or contains(@name,"Target Knee")]');
-    await client.elementClick(kneeBtn);
-    await sleep(400);
-    const continueBtn1 = await findFresh(client, '//XCUIElementTypeButton[@label="CONTINUE" or @name="CONTINUE"]');
-    await client.elementClick(continueBtn1);
-    await sleep(1000);
-    await screenshot(client, DIR, 'relief03-02-duration-screen');
-    const { source: s1 } = await dumpSource(client, DIR, 'relief03-02-duration-screen');
-    console.log('DURATION SCREEN:', JSON.stringify(interactiveSummary(extractElements(s1)), null, 2));
-
-    // Pick the shortest duration (5 min) so the early-end test doesn't take long.
-    const fiveMin = await findFresh(client, '//XCUIElementTypeButton[contains(@label,"5 min") or contains(@name,"5 min")] | //XCUIElementTypeOther[contains(@label,"5 min") or contains(@name,"5 min")]');
-    if (fiveMin) { await client.elementClick(fiveMin); await sleep(500); }
-    const continueBtn2 = await findFresh(client, '//XCUIElementTypeButton[@label="CONTINUE" or @name="CONTINUE" or contains(@label,"START") or contains(@name,"START")]');
-    if (continueBtn2) { await client.elementClick(continueBtn2); await sleep(1500); }
-    await screenshot(client, DIR, 'relief03-03-after-duration-continue');
-    const { source: s2 } = await dumpSource(client, DIR, 'relief03-03-after-duration-continue');
-    console.log('AFTER DURATION CONTINUE:', JSON.stringify(interactiveSummary(extractElements(s2)), null, 2));
+    await screenshot(client, DIR, '56-sessions-tab-after-save');
+    ({ source } = await dumpSource(client, DIR, '56-sessions-tab-after-save'));
+    console.log('SESSIONS TAB AFTER SAVE:', JSON.stringify(labeled(source), null, 2));
   } finally {
     await endSession(client);
   }

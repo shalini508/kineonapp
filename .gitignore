@@ -1,3 +1,12 @@
 node_modules/
 reports/
 *.log
+
+# App builds, simulator bundles and seeded-user CSVs (large binaries plus
+# pre-minted auth tokens -- never commit).
+data/
+
+# Local environment / credentials
+.env
+
+.DS_Store
