@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA report: executed checks</title>
+<style>
+  :root { --bg:#f5f4f0; --card:#fff; --ink:#1c1c1c; --muted:#5d5d5d; --line:#dcdad3;
+    --pass:#1f7a3a; --pass-bg:#e6f4ea; --fail:#a33a1f; --fail-bg:#fbe9e4; --todo:#7a5b00; --todo-bg:#fdf3d7; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg:#141414; --card:#1e1e1e; --ink:#f2f2f0; --muted:#a8a8a4; --line:#333;
+      --pass:#6cd38b; --pass-bg:#1d3327; --fail:#f0a08a; --fail-bg:#3a2119; --todo:#e8c668; --todo-bg:#3a3118; }
+  }
+  :root[data-theme="dark"] { --bg:#141414; --card:#1e1e1e; --ink:#f2f2f0; --muted:#a8a8a4; --line:#333;
+    --pass:#6cd38b; --pass-bg:#1d3327; --fail:#f0a08a; --fail-bg:#3a2119; --todo:#e8c668; --todo-bg:#3a3118; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif; }
+  main { max-width:960px; margin:0 auto; padding:24px 16px 48px; }
+  h1 { font-size:26px; margin:0 0 4px; }
+  h2 { font-size:19px; margin:32px 0 10px; border-bottom:1px solid var(--line); padding-bottom:6px; }
+  .meta { color:var(--muted); font-size:14px; }
+  .meta div { margin:2px 0; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin:18px 0; }
+  .stat { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px; }
+  .stat .n { font-size:26px; font-weight:700; }
+  .stat .l { color:var(--muted); font-size:13px; }
+  .stat.pass .n { color:var(--pass); } .stat.fail .n { color:var(--fail); } .stat.todo .n { color:var(--todo); }
+  .table-wrap { overflow-x:auto; background:var(--card); border:1px solid var(--line); border-radius:10px; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { background:rgba(0,0,0,0.03); font-weight:600; }
+  tr:last-child td { border-bottom:none; }
+  .tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; font-weight:600; white-space:nowrap; }
+  .tag.pass { color:var(--pass); background:var(--pass-bg); }
+  .tag.fail { color:var(--fail); background:var(--fail-bg); }
+  .tag.todo { color:var(--todo); background:var(--todo-bg); }
+  .note { background:var(--card); border-left:4px solid var(--todo); padding:10px 14px; border-radius:6px; margin:12px 0; }
+  ul, ol { padding-left:22px; } li { margin:4px 0; }
+  @media (max-width:600px) { main { padding:16px 12px 40px; } h1 { font-size:22px; } th, td { padding:7px 8px; font-size:13px; } }
+</style>
+</head>
+<body>
+<main>
+
+<h1>QA report: executed checks</h1>
+<div class="meta">
+  <div><strong>Date:</strong> 2026-11-01</div>
+  <div><strong>Tester:</strong> Shalini Gupta</div>
+  <div><strong>Device:</strong> iPhone 16 (iOS 26.6.1), physical, connected by USB</div>
+  <div><strong>Build:</strong> TestFlight 1.0.0 (build 35 or later, per the Asana ticket)</div>
+  <div><strong>Accounts:</strong> day65@yopmail.com and day66@yopmail.com (dedicated test accounts only)</div>
+  <div><strong>Asana tickets:</strong> Learn page update (1219279996157140), Learn page updates (1219283501677126), Relief+ timers (1219280414645205), Shop page fixes (1219283501677118), Day 66 Celebration Moment (1218018501285841)</div>
+</div>
+
+<p class="note">This report lists only the checks that were executed. Checks that were not run are left out.</p>
+
+<div class="cards">
+  <div class="stat pass"><div class="n">39</div><div class="l">Passed</div></div>
+  <div class="stat fail"><div class="n">3</div><div class="l">Failed, not reached, or issue</div></div>
+  <div class="stat todo"><div class="n">2</div><div class="l">Executed, not verified</div></div>
+</div>
+
+<h2>1. Learn page</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>#</th><th>Check</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Device switch: MOVE+ and RELIEF+ each show their own content</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>2</td><td>HEAL+ shows "Coming soon" and doesn't open content</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>3</td><td>Section order: Search, Getting started, Treatment guides, Help &amp; troubleshooting, Explore the science, Meditation Library, Library articles</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>4</td><td>Search "knee" returns matching results</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>5</td><td>Search with no match shows "Try a body area, charging, syncing, or science."</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>6</td><td>Search "device" opens Your device</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>7</td><td>Search "help" opens the FAQ with device tabs</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>8</td><td>Search "resources" opens More to explore</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>9</td><td>Search "science" opens the science article</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>10</td><td>Search "meditation" opens the Meditation Library</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>11</td><td>Switching device clears the search box</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>12</td><td>FAQ category opens (4 to 5 questions) and closes again</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>13</td><td>FAQ search "battery" returns charging questions</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>14</td><td>Contact block shows "Still need help?", email, US and UK numbers, and "Contact us"</td><td><span class="tag pass">Pass</span></td><td>Presence only</td></tr>
+    <tr><td>15</td><td>"Contact us" tapped; destination</td><td><span class="tag todo">Executed, not verified</span></td><td>The device dropped before the result was checked</td></tr>
+    <tr><td>16</td><td>Knee treatment guide opens with steps, time and module details</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>17</td><td>"Explore knee exercises" opens the exercise list (Level 1 and 2, videos)</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>18</td><td>"Read the full treatment plan · PDF" opens the PDF</td><td><span class="tag pass">Pass</span></td><td>13-page document</td></tr>
+    <tr><td>19</td><td>"Mark routine reviewed" shows "✓ Reviewed" and stays after reopening the app</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>20</td><td>"Mark positioning reviewed" shows "✓ Reviewed" and stays after reopening the app</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>21</td><td>Setup guide "Mark guide complete" shows "Completed ✓" and stays after reopening the app</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>22</td><td>Setup video (MOVE+ quick start) loads and plays</td><td><span class="tag pass">Pass</span></td><td>Player with controls shown</td></tr>
+    <tr><td>23</td><td>Positioning video (Knee) plays</td><td><span class="tag pass">Pass</span></td><td>Progress bar moves; pause control shown</td></tr>
+    <tr><td>24</td><td>Lesson 1: "Mark complete" then "Next lesson" works</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>25</td><td>Learn card shows "1 of 5 completed" and "Continue learning", and stays after reopening the app</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>26</td><td>"Continue learning" opens the science lesson sequence</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>27</td><td>Lesson 5 "Explore Research summaries" opens the full article</td><td><span class="tag fail">Not reached</span></td><td>The attempt did not reach the link in this run</td></tr>
+    <tr><td>28</td><td>Full article: "Play the full animation" tapped</td><td><span class="tag todo">Executed, not verified</span></td><td>Tap accepted; playback not confirmed on screen</td></tr>
+    <tr><td>29</td><td>Full article: "Infrared" switch</td><td><span class="tag fail">Failed</span></td><td>Tap did not register</td></tr>
+    <tr><td>30</td><td>"Red Light Panel" switch changes the diagram (Lesson 2)</td><td><span class="tag pass">Pass</span></td><td>Panel illustration shown</td></tr>
+    <tr><td>31</td><td>MOVE+ body-part list shows Ankle and Foot separately</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>32</td><td>RELIEF+ body-part list shows the 11 guide body parts</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>33</td><td>"?" icon on MOVE+ Foot setup opens the Foot treatment guide with no "Start a new session" button</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>34</td><td>First-time placement panel for MOVE+ Foot</td><td><span class="tag fail">Issue</span></td><td>Shows device steps instead of the treatment guide. Agreed to change by Mary and Kundan (Oct 30). Reported in Asana on 2026-11-01.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>2. Saved sessions and session log</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>#</th><th>Check</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>RELIEF+ Glutes, 30-second session run to the end, check-in saved</td><td><span class="tag pass">Pass</span></td><td>Session Log shows "Glutes"</td></tr>
+    <tr><td>2</td><td>Log a past session: MOVE+, Foot, 5 min, check-in skipped</td><td><span class="tag pass">Pass</span></td><td>Session Log shows "Foot"</td></tr>
+    <tr><td>3</td><td>Log a past session: RELIEF+, Glutes, 5 min, check-in skipped</td><td><span class="tag pass">Pass</span></td><td>Session Log shows "Glutes"</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>3. Security (device-side)</h2>
+<p class="meta">Dedicated test accounts only, no real user data.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>#</th><th>Check</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Sign-out returns to the welcome screen; Home isn't visible afterward</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>2</td><td>Wrong password shows "Invalid login credentials"</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>3</td><td>Unknown email at sign-in shows the same message</td><td><span class="tag pass">Pass</span></td><td>Sign-in doesn't reveal which emails are registered</td></tr>
+    <tr><td>4</td><td>Password reset: unknown email and registered test email show the same "We sent a verification code" screen</td><td><span class="tag pass">Pass</span></td><td>Reset doesn't reveal which emails are registered</td></tr>
+    <tr><td>5</td><td>Data separation: day66 shows only its own sessions (330 min, Knee only); day65's Foot and Glutes entries don't appear</td><td><span class="tag pass">Pass</span></td><td></td></tr>
+    <tr><td>6</td><td>"Show password" toggle tapped</td><td><span class="tag pass">Pass</span></td><td>Executed; no screenshot check of the revealed text</td></tr>
+    <tr><td>7</td><td>Password fields hide input</td><td><span class="tag pass">Pass</span></td><td>From an earlier run (bullet count matched the typed length)</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>4. Test data changes on the day65 account</h2>
+<div class="note">These changes were made during testing, so the account no longer matches its original seeded state.</div>
+<ul>
+  <li>Routine and positioning review marks set on the Knee guide</li>
+  <li>MOVE+ quick start guide marked complete</li>
+  <li>Science Lesson 1 marked complete</li>
+  <li>Sessions logged: RELIEF+ Glutes (30 s, timed), MOVE+ Foot (5 min, past), RELIEF+ Glutes (5 min, past)</li>
+  <li>One unfinished MOVE+ Foot session was discarded, not logged</li>
+  <li>Milestone moved from Day 66 to Day 68, from the new sessions</li>
+</ul>
+<p>The day66 account was signed in for the data-separation check. No sessions were logged on it.</p>
+
+</main>
+</body>
+</html>
