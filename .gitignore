@@ -10,3 +10,6 @@ data/
 .env
 
 .DS_Store
+
+# Screenshots from the 2026-11-23 QA scripts
+scripts/qa-2026-11-23/shots/
